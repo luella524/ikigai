@@ -1,39 +1,68 @@
 # Ikigai
 
-Compare your current role with the role you want. See your alignment. Choose your next move.
+**Find clarity between the work you have and the work you want.**
 
-## Setup
+[Live site](https://www.findikigai.site/)
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+Ikigai is a small career-reflection tool inspired by the Japanese idea of finding meaning and direction in life. It helps people compare a current role with an ideal role through the priorities that matter to them, then turns the result into a shareable Career Card.
 
-Open [http://localhost:3000](http://localhost:3000).
+> This is a reflection tool, not a job-matching service or a prediction engine. You make the final call.
 
-Put the AIHubMix key in `.env.local`:
+## What it does
 
-```text
-AIHUBMIX_API_KEY=sk-...
-```
+1. **Define your Ikigai**  
+   Set how much four dimensions should count for you: Love, Strength, World/Impact, and Paid/Lifestyle. The weights add up to 100.
 
-Restart `npm run dev` after saving the file. The key stays on the server. The browser only calls `POST /api/analyze`.
+2. **Compare two roles**  
+   Add a current role and an ideal role, along with the context needed to evaluate each one.
 
-`AIHUBMIX_BASE_URL` and `AIHUBMIX_JEV_MODEL` are optional. They default to `https://aihubmix.com` and `jev-latest`.
+3. **See your Ikigai Gap**  
+   Each role receives a 0-100 alignment score. The gap is calculated as:
 
-## Local mock mode
+   ```text
+   Ikigai Gap = Ideal Role Alignment - Current Role Alignment
+   ```
 
-With no `AIHUBMIX_API_KEY`, `npm run dev` still runs the full flow and returns a stable local score. The same answers always produce the same numbers. Mock scoring lives in `lib/mock-evaluation.ts`.
+4. **Share your Career Card**  
+   Generate a portrait card with your name, both roles, their scores, and the gap. Download it as a PNG or share it from your device.
 
-A production server without a key returns a configuration error instead of the mock.
+## How the score works
 
-## AIHubMix Run JEV
+Ikigai does not decide which career you should choose. It makes the trade-offs visible.
 
-Live calls are in `lib/aihubmix.ts`. They follow the official decision endpoint:
+Each role is evaluated against the four dimensions you weighted:
 
-`POST https://aihubmix.com/v1/systemone`
+| Dimension | What it asks |
+| --- | --- |
+| Love | Would this work feel energising and meaningful to you? |
+| Strength | Does the role make use of what you do well? |
+| World/Impact | Does the work connect with the contribution you want to make? |
+| Paid/Lifestyle | Does it support the income and way of life you want? |
 
-Contract: [jev-latest llms.txt](https://aihubmix.com/model/jev-latest/llms.txt).
+The product calculates a weighted total for each role, then compares the two totals. A positive gap means the ideal role is a stronger fit for the priorities you chose. It does **not** predict job offers, salary, or career outcomes.
 
-The request scores eight role questions only: `current_love`, `current_strength`, `current_impact`, `current_paid`, and the matching `ideal_*` ids. Each question names only that role and uses the Ikigai the user defined. JEV does not return an overall score, and this MVP does not call JEV Choice. Each dimension is one of five bands: 10, 30, 50, 70, or 90. Ikigai Fit is the weighted average of those bands, rounded to the nearest 5. The Ikigai Gap is ideal fit minus current fit.
+## JEV and AIHubMix
+
+Live evaluation can run through **JEV via AIHubMix**. JEV is used for structured decisions and scores rather than open-ended career advice.
+
+## About the creator
+
+**Ella Lu** is a GTM leader with 10+ years of experience across media technology, generative AI, AI infrastructure, and cloud computing. She is the founder of [Multimodal Club](https://www.multimodalclub.com/).
+
+### Career highlights
+
+- Founding growth team at musical.ly/TikTok
+- Product strategy and product marketing at Bilibili and Reel.AI
+- Creator and partnerships ecosystem at PixVerse
+- Field and partner marketing at Alibaba Cloud and Qwen U.S., promoting Qwen, Wan, HappyHorse, and HappyOyster models
+- Led an Agent Conference and Hackathon with AMD, an AI video creator mixer with NVIDIA, and a joint world-model launch with Reactor
+- Content creator with 10K+ followers, sharing career advice and practical AI skills
+
+### Multimodal Club
+
+[**Multimodal Club**](https://www.multimodalclub.com/) is the first multimodal AI community for the people, products, and infrastructure shaping multimodal AI across LLMs, vision, video, voice, and world models on the path toward AGI.
+
+### Connect
+
+- Email: [ella@multimodalclub.com](mailto:ella@multimodalclub.com)
+- X: [@luuuella](https://x.com/luuuella)
