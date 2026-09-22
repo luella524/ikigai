@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ikigai
 
-## Getting Started
+Compare your current role with the role you want. See your alignment. Choose your next move.
 
-First, run the development server:
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Put the AIHubMix key in `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+AIHUBMIX_API_KEY=sk-...
+```
 
-## Learn More
+Restart `npm run dev` after saving the file. The key stays on the server. The browser only calls `POST /api/analyze`.
 
-To learn more about Next.js, take a look at the following resources:
+`AIHUBMIX_BASE_URL` and `AIHUBMIX_JEV_MODEL` are optional. They default to `https://aihubmix.com` and `jev-latest`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local mock mode
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+With no `AIHUBMIX_API_KEY`, `npm run dev` still runs the full flow and returns a stable local score. The same answers always produce the same numbers. Mock scoring lives in `lib/mock-evaluation.ts`.
 
-## Deploy on Vercel
+A production server without a key returns a configuration error instead of the mock.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## AIHubMix Run JEV
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Live calls are in `lib/aihubmix.ts`. They follow the official decision endpoint:
+
+`POST https://aihubmix.com/v1/systemone`
+
+Contract: [jev-latest llms.txt](https://aihubmix.com/model/jev-latest/llms.txt).
+
+The request scores eight role questions only: `current_love`, `current_strength`, `current_impact`, `current_paid`, and the matching `ideal_*` ids. Each question names only that role and uses the Ikigai the user defined. JEV does not return an overall score, and this MVP does not call JEV Choice. Each dimension is one of five bands: 10, 30, 50, 70, or 90. Ikigai Fit is the weighted average of those bands, rounded to the nearest 5. The Ikigai Gap is ideal fit minus current fit.
